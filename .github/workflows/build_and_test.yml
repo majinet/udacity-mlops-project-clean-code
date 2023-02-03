@@ -35,4 +35,8 @@ jobs:
         pylint *.py --disable=invalid-name
     - name: Test with pytest
       run: |
-        pytest -o log_cli=true --log-cli-level=INFO churn_script_logging_and_tests.py
+        pytest churn_script_logging_and_tests.py
+    - name: Run churn_library.py
+      run: |
+        python churn_library.py
+      
