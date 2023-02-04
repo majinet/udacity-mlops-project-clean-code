@@ -32,7 +32,7 @@ jobs:
     - name: pylint to check the standard of code
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        pylint *.py --disable=invalid-name,line-too-long,too-many-arguments,too-many-locals,no-member,unsubscriptable-object
+        pylint *.py --disable=R0801,invalid-name,line-too-long,too-many-arguments,too-many-locals,no-member,unsubscriptable-object
     - name: Test with pytest
       run: |
         pytest churn_script_logging_and_tests.py
