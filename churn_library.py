@@ -7,43 +7,41 @@ Date: 4-Jan-2023
 """
 
 # import libraries
+import os
+import sys
 from sklearn.metrics import plot_roc_curve, classification_report
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
+from typing import Any
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import joblib
-import os
-import sys
+
 os.environ['QT_QPA_PLATFORM'] = 'offscreen'
 
 
-def import_data(pth):
-    '''
+def import_data(pth: Any) -> pd.DataFrame:
+    """
     returns dataframe for the csv found at pth
 
-    input:
-            pth: a path to the csv
-    output:
-            df: pandas dataframe
-    '''
+    :param pth: a path to the csv
+    :return: pandas dataframe
+    """
 
     df = pd.read_csv(pth)
     return df
 
 
-def perform_eda(df):
-    '''
+def perform_eda(df: pd.DataFrame) -> None:
+    """
     perform eda on df and save figures to images folder
-    input:
-            df: pandas dataframe
 
-    output:
-            None
-    '''
+    :param df: pandas dataframe
+    :return:
+    """
 
     # create and save Univariate, quantitative plot for Customer Age
     plt.figure(figsize=(20, 10))
@@ -65,19 +63,17 @@ def perform_eda(df):
     plt.savefig('./images/eda/Churn.png')
 
 
-def encoder_helper(df, category_lst, response):
-    '''
+def encoder_helper(df: pd.DataFrame, category_lst: list, response: Any) -> pd.DataFrame:
+    """
     helper function to turn each categorical column into a new column with
     propotion of churn for each category - associated with cell 15 from the notebook
 
-    input:
-            df: pandas dataframe
-            category_lst: list of columns that contain categorical features
-            response: string of response name [optional argument that could be used for naming variables or index y column]
+    :param df: pandas dataframe
+    :param category_lst: list of columns that contain categorical features
+    :param response: string of response name [optional argument that could be used for naming variables or index y column]
+    :return: pandas dataframe with new columns for
+    """
 
-    output:
-            df: pandas dataframe with new columns for
-    '''
     for colname in category_lst:
 
         lst = []
@@ -91,18 +87,15 @@ def encoder_helper(df, category_lst, response):
     return df
 
 
-def perform_feature_engineering(df, response):
-    '''
-    input:
-              df: pandas dataframe
-              response: string of response name [optional argument that could be used for naming variables or index y column]
+def perform_feature_engineering(df: pd.DataFrame, response: Any):
+    """
+    Split train and test set for training
 
-    output:
-              X_train: X training data
-              X_test: X testing data
-              y_train: y training data
-              y_test: y testing data
-    '''
+    :param df: pandas dataframe
+    :param response: string of response name [optional argument that could be used for naming variables or index y column]
+    :returns: X_train, X_test, y_train, y_test
+    """
+
     # define y (label)
     y = df['Churn']
 
@@ -150,16 +143,16 @@ def perform_feature_engineering(df, response):
     return X_train, X_test, y_train, y_test
 
 
-def classification_report_image(y_train,
-                                y_test,
-                                y_train_preds_lr,
-                                y_train_preds_rf,
-                                y_test_preds_lr,
-                                y_test_preds_rf):
-    '''
+def classification_report_image(y_train: Any,
+                                y_test: Any,
+                                y_train_preds_lr: Any,
+                                y_train_preds_rf: Any,
+                                y_test_preds_lr: Any,
+                                y_test_preds_rf: Any) -> None:
+    """
     produces classification report for training and testing results and stores report as image
     in images folder
-    input:
+    :param:
             y_train: training response values
             y_test:  test response values
             y_train_preds_lr: training predictions from logistic regression
@@ -167,9 +160,10 @@ def classification_report_image(y_train,
             y_test_preds_lr: test predictions from logistic regression
             y_test_preds_rf: test predictions from random forest
 
-    output:
+    :returns:
              None
-   '''
+
+    """
 
     with open('./images/results/classification_report.txt', 'w') as f:
         sys.stdout = f  # Change the standard output to the file we created.
@@ -190,17 +184,16 @@ def classification_report_image(y_train,
         sys.stdout = sys.stdout
 
 
-def feature_importance_plot(model, X_data, output_pth):
-    '''
+def feature_importance_plot(model: Any, X_data: pd.DataFrame, output_pth: str) -> None:
+    """
     creates and stores the feature importances in pth
-    input:
-            model: model object containing feature_importances_
-            X_data: pandas dataframe of X values
-            output_pth: path to store the figure
 
-    output:
-             None
-    '''
+    :param model: model object containing feature_importances_
+    :param X_data: pandas dataframe of X values
+    :param output_pth: path to store the figure
+    :return: None
+    """
+
     # Calculate feature importances
     importances = model.feature_importances_
     # Sort feature importances in descending order
@@ -225,17 +218,16 @@ def feature_importance_plot(model, X_data, output_pth):
     plt.savefig(output_pth)
 
 
-def train_models(X_train, X_test, y_train, y_test):
-    '''
+def train_models(X_train: pd.DataFrame, X_test: pd.DataFrame, y_train: pd.DataFrame, y_test: pd.DataFrame) -> None:
+    """
     train, store model results: images + scores, and store models
-    input:
-              X_train: X training data
-              X_test: X testing data
-              y_train: y training data
-              y_test: y testing data
-    output:
-              None
-    '''
+
+    :param X_train: X training data
+    :param X_test: X testing data
+    :param y_train: y training data
+    :param y_test: y testing data
+    :return: None
+    """
 
     # grid search
     rfc = RandomForestClassifier(random_state=42)
@@ -275,9 +267,9 @@ def train_models(X_train, X_test, y_train, y_test):
                                 y_test_preds_rf)
 
     # plots roc for RandomForestClassifier and LogisticRegression
-    fig, ax = plt.subplots()
-    rfc_disp = plot_roc_curve(cv_rfc.best_estimator_, X_test, y_test, ax=ax, alpha=0.8, name="RandomForestClassifier")
-    lrc_plot = plot_roc_curve(lrc, X_test, y_test, ax=ax, alpha=0.8, name="LogisticRegression")
+    _, ax = plt.subplots()
+    plot_roc_curve(cv_rfc.best_estimator_, X_test, y_test, ax=ax, alpha=0.8, name="RandomForestClassifier")
+    plot_roc_curve(lrc, X_test, y_test, ax=ax, alpha=0.8, name="LogisticRegression")
     ax.set_xlim(0, 0.4)
     ax.set_ylim(0.2, 1)
     _ = ax.set_title('ROC curve')
@@ -301,8 +293,5 @@ if __name__ == "__main__":
 
     X_train_bank, X_test_bank, y_train_bank, y_test_bank = perform_feature_engineering(
         df_bank, 'Churn')
-
-    print(f"X_train_bank: {type(X_train_bank)}")
-    print(f"y_train_bank: {type(y_train_bank)}")
 
     train_models(X_train_bank, X_test_bank, y_train_bank, y_test_bank)

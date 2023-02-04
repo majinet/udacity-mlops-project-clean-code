@@ -12,12 +12,10 @@ Author: Atauro Chow
 Date: 4-Jan-2023
 """
 
-import pytest
 import logging
 from os.path import exists
 import churn_library as cls
 import pandas as pd
-from datetime import datetime
 
 
 def test_import_data():
