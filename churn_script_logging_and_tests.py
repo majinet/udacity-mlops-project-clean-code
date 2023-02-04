@@ -12,10 +12,10 @@ Author: Atauro Chow
 Date: 4-Jan-2023
 """
 
-import logging
-from os.path import exists
-import churn_library as cls
 import pandas as pd
+import logging
+import churn_library as cls
+from os.path import exists
 
 
 def test_import_data():
